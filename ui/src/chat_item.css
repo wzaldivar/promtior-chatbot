@@ -1,0 +1,42 @@
+.chat-line {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    border-radius: .5rem;
+    border-style: solid;
+    border-width: medium;
+    padding: .5rem;
+    color: #1a1a1a;
+    width: 80%;
+}
+
+.role-user {
+    background: lightsteelblue;
+    align-self: flex-end;
+    border-color: darkblue;
+}
+
+.role-user .avatar {
+    align-self: flex-end;
+}
+
+.role-bot {
+    background: lightyellow;
+    align-self: flex-start;
+    border-color: yellowgreen;
+}
+
+.chat-text {
+    text-align: justify;
+}
+
+.avatar {
+    height: 1.5rem;
+    width: 1.5rem;
+    border-width: medium;
+    border-style: solid;
+    border-color: #1a1a1a;
+    border-radius: 50%;
+    padding: .2rem;
+    object-fit: cover;
+}

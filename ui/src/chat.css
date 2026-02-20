@@ -1,0 +1,30 @@
+.chat-layout {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    width: 90%;
+    max-width: 800px;
+}
+
+.chat-layout h2 {
+    text-align: center;
+}
+
+.messages-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.input-group textarea {
+    flex: 1;
+}
