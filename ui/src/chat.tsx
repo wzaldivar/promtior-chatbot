@@ -15,6 +15,8 @@ type ChatMessage = {
 };
 import "./chat.css";
 
+const HOST = import.meta.env.VITE_API_HOST;
+
 const Chat: FunctionComponent = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -28,7 +30,7 @@ const Chat: FunctionComponent = () => {
     }
   }, [messages, isBotTyping]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim() || isBotTyping) return;
 
     const userMessage: ChatMessage = {
@@ -41,15 +43,43 @@ const Chat: FunctionComponent = () => {
     setInput("");
     setIsBotTyping(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${HOST}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: input,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+
+      const data = await res.json();
+
       const botMsg: ChatMessage = {
         id: Date.now() + 1,
         role: ChatRole.BOT,
-        message: "Beep boop, I am fixed!",
+        message: data.response,
       };
+
       setMessages((prev) => [...prev, botMsg]);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Unknown error";
+
+      const botMsg: ChatMessage = {
+        id: Date.now() + 1,
+        role: ChatRole.BOT,
+        message: message,
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+    } finally {
       setIsBotTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {

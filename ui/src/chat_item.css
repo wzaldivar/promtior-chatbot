@@ -28,6 +28,7 @@
 
 .chat-text {
     text-align: justify;
+    white-space: pre-wrap;
 }
 
 .avatar {
