@@ -1,0 +1,8 @@
+pdf_sources:
+  - path: "AI Engineer.pdf"
+    pages: [3]
+
+web_sources:
+  - url: "https://www.promtior.ai"
+  - url: "https://www.promtior.ai/service"
+  - url: "https://www.promtior.ai/use-cases"

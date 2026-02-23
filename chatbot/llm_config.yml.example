@@ -1,0 +1,8 @@
+vector_store:
+  name: "faiss"
+  path: "faiss_index"
+
+model:
+  model_provider: "ollama"
+  model_name: "tinyllama"
+  base_url: "http://localhost:11434"
