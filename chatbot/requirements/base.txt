@@ -1,0 +1,6 @@
+langchain
+pydantic
+pydantic-yaml
+langchain-community
+langchain-ollama
+faiss-cpu

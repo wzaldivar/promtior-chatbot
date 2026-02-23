@@ -1,0 +1,11 @@
+.idea
+.venv
+
+.python-version
+
+__pycache__
+
+*.yml
+*.pdf
+*.faiss
+*.pkl
