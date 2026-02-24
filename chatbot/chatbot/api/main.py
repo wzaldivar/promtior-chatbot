@@ -4,7 +4,7 @@ from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
-from chatbot.api.agent import is_vector_store_present, get_agent
+from chatbot.api.agent import is_vector_store_present, get_response
 
 app = FastAPI()
 
