@@ -1,3 +1,4 @@
+import asyncio
 from collections import deque
 from urllib.parse import urlparse, urlunparse, urljoin
 
@@ -49,30 +50,34 @@ def discover_urls(url, max_depth=2):
     return unique_urls
 
 
-def load_url(url):
-    docs = []
-
+async def load_url(url):
     try:
         loader = WebBaseLoader(url)
-        docs.extend(loader.load())
+        docs = await asyncio.to_thread(loader.aload)
         print(f"{url} loaded")
+        return docs
     except Exception as e:
         print(f"Failed to load {url}: {e}")
+        return []
 
-    return docs
 
-
-def ingest_websites():
+async def ingest_websites():
     web_sources = get_ingestion_config().web_sources
 
     for web_source in web_sources:
         urls = []
         normalized = normalize_url(web_source.url)
         if web_source.follow_links:
-            urls.extend(discover_urls(normalized, max_depth=web_source.max_depth))
+            urls.extend(
+                await asyncio.to_thread(
+                    discover_urls,
+                    normalized,
+                    max_depth=web_source.max_depth
+                ))
         else:
             urls.append(normalized)
 
         for url in urls:
-            docs = load_url(url)
-            store_documents(docs, web_source)
+            docs = await load_url(url)
+            if len(docs) > 0:
+                await store_documents(docs, web_source)

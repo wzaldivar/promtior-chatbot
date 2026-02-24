@@ -1,5 +1,5 @@
+import asyncio
 import os
-import threading
 
 from langchain_community.vectorstores import FAISS
 
@@ -7,14 +7,15 @@ from chatbot.common.llm.config import get_llm_config
 from chatbot.common.llm.providers.embeddings import get_embeddings
 
 __vector_store = None
-__lock = threading.Lock()
+__lock = asyncio.Lock()
+__store_local_lock = asyncio.Lock()
 
 
 def is_vector_store_initialized():
     return __vector_store is not None
 
 
-def __faiss_vector_store(docs=None):
+async def __faiss_vector_store(docs=None):
     faiss_config = get_llm_config().vector_store
 
     embeddings = get_embeddings()
@@ -22,16 +23,30 @@ def __faiss_vector_store(docs=None):
     # ingestion initialization mode
     if docs is not None:
         print("faiss vector store initialized from documents")
-        faiss = FAISS.from_documents(docs, embeddings)
-        if faiss_config.path:
-            faiss.save_local(faiss_config.path)
+        faiss = await FAISS.afrom_documents(docs, embeddings)
+        await __persist_faiss(faiss, faiss_config)
         return faiss
     # load mode
     elif faiss_config.path and os.path.exists(faiss_config.path):
         print("faiss vector store initialized from path")
-        return FAISS.load_local(faiss_config.path, embeddings, allow_dangerous_deserialization=True)
+        return await asyncio.to_thread(
+            FAISS.load_local,
+            faiss_config.path,
+            embeddings,
+            allow_dangerous_deserialization=True
+        )
 
     return None
+
+
+async def __persist_faiss(vector_store, config):
+    if config.path:
+        async with __store_local_lock:
+            try:
+                print("persisting vector store")
+                await asyncio.to_thread(vector_store.save_local, config.path)
+            except Exception as e:
+                print(f"Error saving vector store {config.path}: {e}")
 
 
 def __get_vector_store_factory():
@@ -48,11 +63,11 @@ def __get_vector_store_factory():
     return vector_store_factory
 
 
-def get_vector_store(docs=None):
+async def get_vector_store(docs=None):
     global __vector_store
     if __vector_store is None:
-        with __lock:
+        async with __lock:
             if __vector_store is None:
                 factory = __get_vector_store_factory()
-                __vector_store = factory(docs)
+                __vector_store = await factory(docs)
     return __vector_store

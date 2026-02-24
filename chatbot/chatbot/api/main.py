@@ -23,13 +23,13 @@ app.add_middleware(
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    response = get_response(request.text)
+    response = await get_response(request.text)
     return {"response": response}
 
 
 @app.get("/health")
 async def health():
-    if is_vector_store_present():
+    if await is_vector_store_present():
         return {"message": "Healthy"}
     raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                         detail="Vector store not available")

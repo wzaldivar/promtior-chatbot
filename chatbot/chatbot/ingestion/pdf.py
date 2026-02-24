@@ -4,12 +4,12 @@ from chatbot.ingestion.config import get_ingestion_config
 from chatbot.ingestion.vector_store import store_documents
 
 
-def load_pdf(source):
+async def load_pdf(source):
     docs = []
 
     try:
         loader = PyPDFLoader(source.path)
-        all_pages = loader.load()
+        all_pages = await loader.aload()
         if source.pages:
             for page in source.pages:
                 if 0 < page <= len(all_pages):
@@ -26,10 +26,10 @@ def load_pdf(source):
     return docs
 
 
-def ingest_pdfs():
+async def ingest_pdfs():
     pdf_sources = get_ingestion_config().pdf_sources
 
     for pdf_source in pdf_sources:
-        docs = load_pdf(pdf_source)
+        docs = await load_pdf(pdf_source)
         if len(docs) > 0:
-            store_documents(docs, pdf_source)
+            await store_documents(docs, pdf_source)
