@@ -1,9 +1,9 @@
 ```bash
-docker compose --profile tinyllama up --abort-on-container-exit
+docker compose --profile tinyllama up --abort-on-container-exit && docker compose --profile tinyllama down
 ```
 
 ```bash
-docker compose --profile ingestion up --abort-on-container-exit
+docker compose --profile ingestion up --abort-on-container-exit && docker compose --profile ingestion down
 ```
 
 ```bash

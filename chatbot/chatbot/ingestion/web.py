@@ -66,7 +66,6 @@ def ingest_websites():
     web_sources = get_ingestion_config().web_sources
 
     for web_source in web_sources:
-        docs = []
         urls = []
         normalized = normalize_url(web_source.url)
         if web_source.follow_links:
@@ -75,6 +74,5 @@ def ingest_websites():
             urls.append(normalized)
 
         for url in urls:
-            docs.extend(load_url(url))
-
-        store_documents(docs, web_source)
+            docs = load_url(url)
+            store_documents(docs, web_source)

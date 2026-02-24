@@ -34,6 +34,9 @@ services:
     depends_on:
       ollama:
         condition: service_healthy
+    volumes:
+      - ./docker_mount/config/:/config/:ro
+      - ./docker_mount/data/:/data
 
   chatbot-server:
     image: wzaldivar/chatbot-server:latest
@@ -48,6 +51,9 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
+    volumes:
+      - ./docker_mount/config/:/config/:ro
+      - ./docker_mount/data/:/data:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s

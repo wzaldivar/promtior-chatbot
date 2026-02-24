@@ -14,6 +14,7 @@ def __get_splitter(chunk_size, chunk_overlap):
 def __persist_faiss(vector_store, config):
     if config.path:
         try:
+            print("persisting vector store")
             vector_store.save_local(config.path)
         except Exception as e:
             print(f"Error saving vector store {config.path}: {e}")
@@ -28,6 +29,7 @@ def store_documents(docs, source):
     split_docs = splitter.split_documents(docs)
 
     if vector_store:
+        print("saving to vector store")
         vector_store.add_documents(split_docs)
 
         extra_persist_steps = {

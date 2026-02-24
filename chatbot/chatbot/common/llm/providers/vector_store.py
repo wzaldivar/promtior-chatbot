@@ -21,12 +21,14 @@ def __faiss_vector_store(docs=None):
 
     # ingestion initialization mode
     if docs is not None:
+        print("faiss vector store initialized from documents")
         faiss = FAISS.from_documents(docs, embeddings)
         if faiss_config.path:
             faiss.save_local(faiss_config.path)
         return faiss
     # load mode
     elif faiss_config.path and os.path.exists(faiss_config.path):
+        print("faiss vector store initialized from path")
         return FAISS.load_local(faiss_config.path, embeddings, allow_dangerous_deserialization=True)
 
     return None
@@ -48,8 +50,9 @@ def __get_vector_store_factory():
 
 def get_vector_store(docs=None):
     global __vector_store
-    with __lock:
-        if __vector_store is None:
-            factory = __get_vector_store_factory()
-            __vector_store = factory(docs)
+    if __vector_store is None:
+        with __lock:
+            if __vector_store is None:
+                factory = __get_vector_store_factory()
+                __vector_store = factory(docs)
     return __vector_store
