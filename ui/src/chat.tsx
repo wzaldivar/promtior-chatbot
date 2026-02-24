@@ -15,7 +15,7 @@ type ChatMessage = {
 };
 import "./chat.css";
 
-const HOST = import.meta.env.VITE_API_HOST;
+const HOST = import.meta.env.VITE_API_HOST ?? "";
 
 const Chat: FunctionComponent = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);

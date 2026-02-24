@@ -1,0 +1,13 @@
+*/.idea
+*/dist
+*/node_modules
+ollama
+*.gitignore
+*/*.pdf
+*/*.yml
+*/.env*
+*.dockerignore
+*/__pycache__
+*Dockerfile
+*/*.faiss
+*/*.pkl

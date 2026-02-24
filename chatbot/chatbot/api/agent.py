@@ -42,6 +42,18 @@ def get_agent():
     return create_agent(get_chat_model(), tools=[], middleware=[prompt_with_context])
 
 
+def get_response(query):
+    last_message = None
+    agent = get_agent()
+    for event in agent.stream(
+            {"messages": [{"role": "user", "content": f"{query}"}]},
+            stream_mode="values",
+    ):
+        last_message = event["messages"][-1]
+    
+    return last_message.content
+
+
 def is_vector_store_present():
     get_vector_store()
     return is_vector_store_initialized()

@@ -1,0 +1,59 @@
+services:
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  tinyllama-init:
+    image: ollama/ollama:latest
+    restart: no
+    profiles:
+      - tinyllama
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: sh -c "ollama pull tinyllama"
+
+  chatbot-ingestor:
+    image: wzaldivar/chatbot-ingestor:latest
+    build:
+      context: .
+      dockerfile: chatbot-ingestor.Dockerfile
+    restart: no
+    profiles:
+      - ingestion
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  chatbot-server:
+    image: wzaldivar/chatbot-server:latest
+    build:
+      context: .
+      dockerfile: chatbot-server.Dockerfile
+    restart: unless-stopped
+    profiles:
+      - chatbot-server
+    depends_on:
+      ollama:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3 
+
+
+volumes:
+  ollama_data:
