@@ -1,0 +1,28 @@
+@startuml
+skinparam componentStyle uml2
+
+[Web UI] as UI <<Frontend>>
+[REST API] as API <<Controller>>
+[Agent Orchestrator] as AGENT <<Service>>
+[RAG Middleware] as MIDDLE <<Logic>>
+
+database "Vector Store" as VS
+cloud "LLM Service" as LLM
+
+UI -(0- API : HTTP/JSON
+API -(0- AGENT : get_response()
+AGENT -(0- MIDDLE : prompt_with_context()
+
+AGENT --(0-- LLM : Chat Model API
+MIDDLE --(0-- VS : Similarity Search
+
+note right of MIDDLE
+  Injects dynamic
+  context to the prompt
+end note
+
+note bottom of AGENT
+  Handles response
+end note
+
+@enduml
